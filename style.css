@@ -1,0 +1,280 @@
+:root {
+  /* Color Variables */
+  --primary: #1d1d1d;
+  --primary-light: #2a2a2a;
+  --warn: #ffcc00;
+  --info: #007bff;
+  --error: #dc3545;
+  --success: #4caf50;
+  --background: #121212;
+  --text: #e0e0e0;
+  --text-dark: #000000;
+  --text-light: #ffffff;
+  --border: rgba(255, 255, 255, 0.1);
+  --hover: rgba(255, 255, 255, 0.05);
+
+  /* Shadow and Transition Variables */
+  --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --hover-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+  --transition: all 0.4s ease-in-out;
+}
+
+/* Body and Font Styles */
+body {
+  font-family: "Roboto", sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background-color: var(--background);
+}
+
+/* Header Styles */
+[data-testid="stHeader"] {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  justify-content: space-between;
+  box-shadow: var(--box-shadow);
+}
+
+/* Animations */
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Main Content Animation */
+.main .block-container {
+  animation: fade var(--transition) forwards;
+}
+
+/* Container Styles */
+.stAlert > div,
+.stException > div,
+.stTextInput,
+.stNumberInput,
+.stDateInput,
+.stTextArea,
+.stSelectbox,
+.stMultiSelect,
+.stSlider,
+.stExpander,
+[data-testid="stBaseButton-secondary"],
+.stSpinner,
+.stProgress {
+  background-color: var(--hover);
+  color: var(--text);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: var(--box-shadow);
+  animation: slide var(--transition) forwards;
+}
+
+/* Interactive Elements Hover Effects */
+.stAlert > div:hover,
+.stException > div:hover,
+.stTextInput:hover,
+.stNumberInput:hover,
+.stDateInput:hover,
+.stTextArea:hover,
+.stSelectbox:hover,
+.stMultiSelect:hover,
+.stSlider:hover,
+.stExpander:hover,
+[data-testid="stBaseButton-secondary"]:hover,
+.stSpinner:hover,
+.stProgress:hover {
+  /* transform: scale(1.03); */
+  box-shadow: var(--hover-shadow);
+}
+
+/* Text Input Styles */
+.stTextArea > div > div,
+.stSelectbox > div > div,
+.stMultiSelect > div > div > div,
+.stDateInput > div > div > div,
+.stTextInput > div > div {
+  color: var(--text);
+  background-color: var(--primary);
+}
+
+/* Alert Styles */
+[data-testid*="stAlertContent"] {
+  border-radius: 8px;
+  padding: 0.35rem;
+  margin-bottom: 0.1rem;
+}
+
+[data-testid="stAlertContentInfo"] {
+  background-color: var(--info);
+}
+
+[data-testid="stAlertContentWarning"] {
+  background-color: var(--warn);
+  color: var(--text-dark);
+}
+
+[data-testid="stAlertContentError"],
+[data-testid="stExceptionMessage"] {
+  background-color: var(--error);
+  color: var(--text-light);
+}
+
+[data-testid="stAlertContentSuccess"] {
+  background-color: var(--success);
+  color: var(--text-light);
+}
+
+/* Button Styles */
+.stButton,
+.stDownloadButton {
+  width: calc(100% - 0.5rem);
+}
+
+.stButton > button,
+.stDownloadButton > button {
+  width: 100%;
+  background-color: var(--primary);
+  color: var(--text-light);
+  border: none;
+  padding: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: var(--transition);
+  box-shadow: var(--box-shadow);
+}
+
+.stButton > button:hover,
+.stDownloadButton > button:hover {
+  background-color: var(--primary-light);
+  transform: scale(1.03);
+}
+
+/* Checkbox Styles */
+.stCheckbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  animation: slide var(--transition) forwards;
+}
+
+[data-testid="stWidgetLabel"] {
+  padding-top: 10px;
+}
+
+.stCheckbox > label {
+  display: flex;
+  align-items: center;
+}
+
+.stCheckbox > label > span {
+  width: 20px;
+  height: 20px;
+  background-color: var(--border);
+  border-radius: 4px;
+  transition: background-color 0.3s ease, border 0.3s ease;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.stCheckbox > label input {
+  display: none;
+}
+
+.stCheckbox > label > div {
+  line-height: inherit;
+}
+
+.stCheckbox > label input:checked + span {
+  background-color: var(--primary);
+  border: 2px solid var(--info);
+}
+
+.stCheckbox > label input:checked + span::after {
+  content: "✓";
+  position: absolute;
+  top: -2px;
+  left: 4px;
+  color: var(--text-light);
+}
+
+.stCheckbox > label > span:hover {
+  background-color: var(--hover);
+}
+
+/* Label Styles */
+label {
+  color: var(--primary-light);
+  font-weight: bold;
+}
+
+/* Sidebar Styles */
+.stSidebar {
+  background-color: var(--primary-light) !important;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+  color: var(--text-color) !important ;
+  background-color: var(--primary) !important ;
+}
+
+/* Sidebar Input and Label Styles */
+.stSidebar input[type="text"],
+.stSidebar input[type="number"],
+.stSidebar textarea,
+.stSidebar label {
+  color: var(--text-light) !important;
+}
+
+/* Popup Styles */
+[data-testid="stPopoverBody"] {
+  padding: 0;
+  animation: slide var(--transition) forwards;
+}
+
+/* Hide deploy button and decoration */
+[data-testid="stAppDeployButton"],
+[data-testid="stDecoration"] {
+  display: none;
+}
+
+/* File Uploader Styles */
+[data-testid="stFileUploader"] {
+  background-color: var(--hover);
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: var(--box-shadow);
+  animation: slide var(--transition) forwards;
+}
+
+[data-testid="stFileUploader"]:hover {
+  transform: scale(1.03);
+  box-shadow: var(--hover-shadow);
+}
+
+/* Json Style */
+.stJson > div {
+  border-radius: 8px;
+  padding: 10px;
+}

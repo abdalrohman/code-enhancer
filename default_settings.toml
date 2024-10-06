@@ -1,0 +1,9 @@
+llm_provider = "google_genai"
+api_key = ""
+autosave_enabled = true
+llm_provider_index = 1
+llm_provider_choose = "google_genai"
+llm_model = "gemini-1.5-flash-latest"
+llm_model_index = 1
+temperature = 0.5
+max_tokens = 4096

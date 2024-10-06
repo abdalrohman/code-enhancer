@@ -1,0 +1,107 @@
+# see https://docs.astral.sh/ruff/settings/
+# see https://docs.astral.sh/ruff/configuration/
+
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".pyenv",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    ".vscode",
+    "*.ipynb",
+]
+line-length = 140
+indent-width = 4
+target-version = "py310"
+show-fixes = true
+fix = true
+
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+docstring-code-format = true
+line-ending = "lf"                # Use LF (Unix-style) line endings
+
+[lint]
+ignore = [
+    "B018",    # flake8-bugbear: Do not perform function calls in argument defaults
+    "TRY003",  # tryceratops: Avoid specifying long messages for exceptions
+    "ANN204",  # flake8-annotations: Missing return type annotation for public function
+    "ANN101",  # flake8-annotations: Missing type annotation for self in method
+    "ANN102",  # flake8-annotations: Missing type annotation for cls in method
+    "A002",    # flake8-builtins: Function name should be lowercase
+    "B904",    # flake8-bugbear: Within an `except` clause, raise exceptions with `raise ... from err`
+    "PLW2901", # flake8-pie: Unnecessary `else` / `elif` used after `return`, `break` or `continue`
+    "RET505",  # flake8-return: Unnecessary `else` after `return`
+    "SIM105",  # flake8-simplify: Use `contextlib.suppress(...)`
+    "SIM115",  # flake8-simplify: Consider `with` statement for resource management
+    # The following rules are disabled due to potential conflicts with the formatter (see Ruff documentation https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules)
+    "W191",   # pycodestyle: Indentation contains tabs
+    "E111",   # pycodestyle: Indentation is not a multiple of four
+    "E114",   # pycodestyle: Indentation is not a multiple of four (comment)
+    "E117",   # pycodestyle: Over-indented
+    "D206",   # pydocstyle:  1 blank line required before class docstring
+    "D300",   # pydocstyle: Use """triple double quotes""" around docstrings
+    "Q000",   # flake8-quotes: Change outer quotes to '
+    "Q001",   # flake8-quotes: Remove unnecessary backslash escape
+    "Q002",   # flake8-quotes: Remove unnecessary backslash escapes
+    "Q003",   # flake8-quotes: Change outer quotes to "
+    "COM812", # flake8-commas: Multiple spaces after comma
+    "COM819", # flake8-commas: Unnecessary comma after last item in list, tuple, or dict
+    "ISC001", # isort: Imports are incorrectly sorted and/or formatted.
+    "ISC002", # isort: Imports are incorrectly sorted and/or formatted.
+]
+select = [
+    "E",   # Pycodestyle errors (syntax errors, basic style)
+    "F",   # Pyflakes (undefined names, unused imports, etc.)
+    "W",   # Pycodestyle warnings (less critical style issues)
+    "C40", # flake8-comprehensions (issues within list comprehensions)
+    "C9",  # McCabe complexity (code complexity checks)
+    "I",   # isort (import sorting and organization)
+    "N",   # naming conventions
+    "PLC", # flake8-plugin-utils (plugin compatibility checks)
+    "RUF", # Ruff-specific rules
+    "S",   # String formatting and handling checks
+    "SIM", # Code simplification suggestions
+    "U",   # Unused code elements (variables, imports, etc.)
+    "UP",  # Unnecessary parentheses
+    "YTT", # Yet Another Type Tool (type annotation checks)
+    "TRY", # Try-except block handling
+    "B",   # flake8-bugbear (common programming errors)
+    "A",   # flake8-annotations
+    "ANN", # flake8-annotations
+    "PLE", # flake8-pylint
+    "PT",  # flake8-pytest
+    "PLW", # flake8-pie
+    "RET", # flake8-return
+] # Select specific linting rules to enable
+
+fixable = ["ALL"] # Allow Ruff to automatically fix all fixable violations
+
+
+[lint.isort]
+force-wrap-aliases = true
+combine-as-imports = true
+force-single-line = false
+force-sort-within-sections = false
+no-sections = false
+
+# Optionally specify required imports to always be present (commented out)
+# required-imports = ["from __future__ import annotations"]
+
+# Optionally customize the order of import sections (commented out)
+section-order = [
+    "future",
+    "standard-library",
+    "local-folder",
+    "first-party",
+    "third-party",
+]
+
+split-on-trailing-comma = true
+
+[lint.mccabe]
+max-complexity = 20

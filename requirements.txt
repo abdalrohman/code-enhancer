@@ -1,0 +1,14 @@
+langchain_community
+streamlit
+python-dotenv
+psutil
+
+# llm provider
+langchain_openai
+langchain_google_genai
+langchain_groq
+langchain_cohere
+langchain_anthropic
+langchain_together
+langchain_ollama
+

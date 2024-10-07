@@ -149,6 +149,52 @@ PROVIDER_DICT = {
 }
 
 
+# TODO add more programming languages
+PROGRAMMING_LANGUAGE_CONFIG = {
+    "Python": {
+        "extensions": {".py", ".pyw", ".pyi"},
+        "exclusions": {
+            ".mypy_cache",
+            ".ruff_cache",
+            "__pycache__",
+            ".pytest_cache",
+            "*.egg-info",
+            "*.whl",
+            "venv",
+            "env",
+            ".ipynb",
+        },
+    },
+    "JavaScript": {
+        "extensions": {".js", ".jsx", ".ts", ".tsx"},
+        "exclusions": {
+            "node_modules",
+            ".next",
+            "build",
+            "dist",
+            "*.log",
+        },
+    },
+    "C++": {"extensions": {".cpp", ".h", ".hpp", ".c", ".cc"}, "exclusions": {"bin", "obj", "*.o", "*.exe"}},
+    "CSS": {"extensions": {".css", ".scss", ".sass"}, "exclusions": {"node_modules", "build", "*.map"}},
+    "HTML": {"extensions": {".html", ".htm"}, "exclusions": {"node_modules", "dist"}},
+    "Git": {"exclusions": {".git"}},
+    "Java": {"extensions": {".java", ".class"}, "exclusions": {"target", "*.jar", "*.war", "*.ear"}},
+    "Ruby": {"extensions": {".rb"}, "exclusions": {"*.gem", ".bundle", "log", "tmp"}},
+    "PHP": {"extensions": {".php"}, "exclusions": {"vendor", "*.log", "*.cache"}},
+    "Go": {"extensions": {".go"}, "exclusions": {"vendor", "*.test", "*.out"}},
+    "Swift": {"extensions": {".swift"}, "exclusions": {"*.xcodeproj", "*.xcworkspace", "*DerivedData*"}},
+    "Kotlin": {"extensions": {".kt", ".kts"}, "exclusions": {"build", "*.jar"}},
+    "TypeScript": {"extensions": {".ts", ".tsx"}, "exclusions": {"node_modules", ".next", "*.log"}},
+    "Rust": {"extensions": {".rs"}, "exclusions": {"target", "*.rs.bk"}},
+    "Env": {"exclusions": {".env"}},
+}
+
+
+VALID_EXTENSIONS = {ext for config in PROGRAMMING_LANGUAGE_CONFIG.values() for ext in config.get("extensions", [])}
+COMMON_EXCLUSIONS = set().union(*(config.get("exclusions", {}) for config in PROGRAMMING_LANGUAGE_CONFIG.values()))
+
+
 class Emoji(Enum):
     CODE_SYMBOL = "💻"
     ENHANCE_ACTION = "🌟"

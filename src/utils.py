@@ -1,9 +1,15 @@
 import base64
+import io
+import os
+from collections.abc import Generator
 from pathlib import Path
 from typing import Any
 
+from src.config import COMMON_EXCLUSIONS, VALID_EXTENSIONS
+
 import streamlit as st
 import toml
+from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 CONFIG_FILE = "settings.toml"
 
@@ -95,3 +101,77 @@ def check_api_key(provider_name: str, api_key: str) -> None:
         st.warning(
             f"Warning: The API key for {provider_name} is either empty or set to the placeholder value. Please update it in your configuration."  # noqa: E501
         )
+
+
+def read_uploaded_files(files_list: list[UploadedFile] | None) -> str:
+    """Reads content from multiple uploaded files."""
+    buffer = io.StringIO()
+    for f in files_list:  # type: ignore
+        if f.size > 0:  # Check for empty files
+            buffer.write(f"""
+                {f.name}:\n\n
+                {f.getvalue().decode("utf-8", errors='ignore')}\n\n
+                """)
+    return buffer.getvalue()
+
+
+def get_files_by_extensions(directory: Path, exclusions: set[str] = COMMON_EXCLUSIONS) -> Generator[Path, None, None]:
+    """Yields files with specified extensions within a directory, skipping excluded directories."""
+    for root, dirs, files in os.walk(directory):
+        dirs[:] = [d for d in dirs if d not in exclusions]
+        for file in files:
+            file_path = Path(file)
+            if file_path.suffix in VALID_EXTENSIONS:
+                yield Path(root) / file_path
+
+
+def build_folder_tree(directory: Path, exclusions: set[str] = COMMON_EXCLUSIONS, prefix: str = "") -> str:
+    """Recursively builds a tree structure of the directory, skipping excluded directories."""
+    tree_structure = []
+
+    try:
+        items = sorted(directory.iterdir(), key=lambda x: x.name)
+    except PermissionError:
+        return f"{prefix}Permission Denied"
+
+    for i, item in enumerate(items):
+        if item.name in exclusions:
+            continue
+
+        connector = "└── " if i == len(items) - 1 else "├── "
+        if item.is_dir():
+            tree_structure.append(f"{prefix}{connector}{item.name}/")
+            sub_prefix = prefix + ("    " if i == len(items) - 1 else "│   ")
+            tree_structure.append(build_folder_tree(item, exclusions, sub_prefix))
+        elif item.suffix in VALID_EXTENSIONS:
+            tree_structure.append(f"{prefix}{connector}{item.name}")
+
+    return "\n".join(tree_structure)
+
+
+def process_folder(directory_path: str, exclusions: set[str] = COMMON_EXCLUSIONS) -> tuple[list[str], str]:
+    """Processes the directory and returns a list of relevant files and a tree structure."""
+    directory = Path(directory_path)
+
+    if not directory.exists() or not directory.is_dir():
+        raise FileNotFoundError(f"Directory not found or is not a directory: {directory}")
+
+    relevant_files = list(get_files_by_extensions(directory, exclusions))
+    folder_tree = build_folder_tree(directory, exclusions) if relevant_files else "No relevant files found."
+
+    return [str(file) for file in relevant_files], folder_tree
+
+
+def concatenate_file_contents(files_list: list) -> str:
+    """Reads content from multiple paths to files and concatenates them into one string."""
+    buffer = io.StringIO()
+
+    for file_path in files_list:
+        path = Path(file_path)
+
+        if path.exists() and path.is_file() and path.stat().st_size > 0:
+            with open(path, encoding="utf-8", errors="ignore") as f:
+                content = f.read()
+                buffer.write(f"{path.name}:\n\n{content}\n\n")
+
+    return buffer.getvalue()

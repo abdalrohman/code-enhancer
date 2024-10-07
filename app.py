@@ -1,12 +1,21 @@
 import os
 import platform
 import sys
+import textwrap
 from typing import Any
 
 from src.chat_llm.llm_config import LLMConfig
 from src.chat_llm.llm_utils import get_llm_response
 from src.config import PROVIDER_DICT, Emoji, prompts_mapping
-from src.utils import Config, apply_global_styles, check_api_key, render_image
+from src.utils import (
+    Config,
+    apply_global_styles,
+    check_api_key,
+    concatenate_file_contents,
+    process_folder,
+    read_uploaded_files,
+    render_image,
+)
 
 import psutil
 import streamlit as st
@@ -66,7 +75,30 @@ def main_tab() -> None:
         )
 
     # User input
-    user_input = st.text_area(f"{Emoji.USER_INPUT.value} Paste your code here:", height=200)
+    input_method = st.radio(
+        "Choose input method:",
+        ["Text Input", "File Upload", "Folder Upload"],
+        horizontal=True,
+    )
+    if input_method == "Text Input":
+        code_snippet = st.text_area(f"{Emoji.USER_INPUT.value} Paste your code here:", height=200)
+    elif input_method == "File Upload":
+        uploaded_files = st.file_uploader("Upload project files:", accept_multiple_files=True)
+
+        code_snippet = read_uploaded_files(uploaded_files)
+    else:  # Folder Upload
+        folder_path = st.text_input("Paste the folder path")
+
+        if folder_path:
+            project_files, project_tree = process_folder(folder_path)
+            concatenated_content = concatenate_file_contents(project_files)
+            # Format the tree structure for better readability
+            formatted_tree = textwrap.indent(project_tree, "    ")
+            code_snippet = f"""{concatenated_content}
+
+            The tree structure of the project is:\n\n{formatted_tree}
+            """
+
     st.info(
         f"{Emoji.INFO.value} You can paste code from any programming language. The AI will attempt to optimize and improve it based on the given prompt."  # noqa: E501
     )
@@ -75,7 +107,7 @@ def main_tab() -> None:
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system_prompt),
-            ("human", "{user_input}"),
+            ("human", "{code_snippet}"),
         ]
     )
 
@@ -83,7 +115,7 @@ def main_tab() -> None:
     if st.button(f"{Emoji.ENHANCE_ACTION.value} Enhance Code"):
         with st.spinner(f"{Emoji.AI_RESPONSE.value} Analyzing and optimizing your code..."):
             try:
-                llm_response = get_llm_response(st.session_state.llm_config, prompt, {"user_input": user_input})
+                llm_response = get_llm_response(st.session_state.llm_config, prompt, {"code_snippet": code_snippet})
                 st.session_state.enhancement_history.append(llm_response)
 
                 st.success(f"{Emoji.SUCCESS.value} Code enhancement complete!")

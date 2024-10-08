@@ -8,6 +8,7 @@ from typing import Any
 from src.config import COMMON_EXCLUSIONS, VALID_EXTENSIONS
 
 import streamlit as st
+import tiktoken
 import toml
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
@@ -175,3 +176,36 @@ def concatenate_file_contents(files_list: list) -> str:
                 buffer.write(f"{path.name}:\n\n{content}\n\n")
 
     return buffer.getvalue()
+
+
+@st.cache_data
+def get_encoding(encoding_name: str) -> tiktoken.Encoding:
+    """Retrieve and cache the encoding based on the encoding name."""
+    return tiktoken.get_encoding(encoding_name)
+
+
+def estimate_token_count(text: str, encoding_name: str | None = "cl100k_base") -> int:
+    """
+    Estimate the number of tokens in the input text using the specified encoding.
+
+    Args:
+        text (str): The text to encode.
+        encoding_name (Optional[str], optional): The encoding name (default is "cl100k_base").
+
+    Returns:
+        int: Estimated number of tokens.
+
+    Raises:
+        TypeError: If `text` or `encoding_name` is not a string.
+        ValueError: If `encoding_name` is unrecognized.
+    """
+    # Validate input types
+    if not isinstance(text, str):
+        raise TypeError("Input text must be a string.")
+    if not isinstance(encoding_name, str):
+        raise TypeError("Encoding name must be a string.")
+
+    # Use cached encoding retrieval
+    encoding = get_encoding(encoding_name)
+
+    return len(encoding.encode(text))

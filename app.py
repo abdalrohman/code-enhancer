@@ -12,6 +12,7 @@ from src.utils import (
     apply_global_styles,
     check_api_key,
     concatenate_file_contents,
+    estimate_token_count,
     process_folder,
     read_uploaded_files,
     render_image,
@@ -62,12 +63,13 @@ def main_tab() -> None:
     )
 
     prompts_list = list(prompts_mapping.keys())
-    default_system_prompt = st.selectbox("System Prompt", prompts_list)
+    selected_system_prompt = st.selectbox("System Prompt", prompts_list)
 
+    _system_prompt = prompts_mapping[selected_system_prompt]
     with st.expander(f"{Emoji.OPTIMIZATION_RESULT.value} Optimization Prompt (Click to expand/collapse)", expanded=False):
         system_prompt = st.text_area(
             "Customize your optimization prompt:",
-            prompts_mapping[default_system_prompt],
+            _system_prompt,
             height=300,
         )
         st.info(
@@ -80,6 +82,7 @@ def main_tab() -> None:
         ["Text Input", "File Upload", "Folder Upload"],
         horizontal=True,
     )
+    code_snippet = ""
     if input_method == "Text Input":
         code_snippet = st.text_area(f"{Emoji.USER_INPUT.value} Paste your code here:", height=200)
     elif input_method == "File Upload":
@@ -90,18 +93,24 @@ def main_tab() -> None:
         folder_path = st.text_input("Paste the folder path")
 
         if folder_path:
-            project_files, project_tree = process_folder(folder_path)
-            concatenated_content = concatenate_file_contents(project_files)
-            # Format the tree structure for better readability
-            formatted_tree = textwrap.indent(project_tree, "    ")
-            code_snippet = f"""{concatenated_content}
+            try:
+                project_files, project_tree = process_folder(folder_path)
+                concatenated_content = concatenate_file_contents(project_files)
+                # Format the tree structure for better readability
+                formatted_tree = textwrap.indent(project_tree, "    ")
+                code_snippet = f"""{concatenated_content}\n\nThe tree structure of the project is:\n\n{formatted_tree}"""
+            except Exception as e:
+                st.error(f"Error processing folder: {e!s}")
 
-            The tree structure of the project is:\n\n{formatted_tree}
-            """
+    info_message = f"{Emoji.INFO.value} You can paste code from any programming language. The AI will attempt to optimize and improve it based on the given prompt."  # noqa: E501
 
-    st.info(
-        f"{Emoji.INFO.value} You can paste code from any programming language. The AI will attempt to optimize and improve it based on the given prompt."  # noqa: E501
-    )
+    if code_snippet:
+        char_count = len(code_snippet)
+        token_count = estimate_token_count(code_snippet)
+        # add character and token counts to the info message
+        info_message += f"""\n\nTotal Characters Count: {char_count}\nEstimated Token Count: {token_count}"""
+    # Display info message to the user
+    st.info(info_message)
 
     # Prompt template
     prompt = ChatPromptTemplate.from_messages(

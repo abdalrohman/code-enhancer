@@ -2,6 +2,7 @@ langchain_community
 streamlit
 python-dotenv
 psutil
+tiktoken
 
 # llm provider
 langchain_openai
